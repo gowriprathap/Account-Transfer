@@ -24,25 +24,6 @@ class Accounts(Resource):
     def get(self):
         return accounts
 
-    # Add or update (if the account already exists) an account
-    def put(self):
-
-        id = request.json["id"]
-        name = request.json["name"]
-        balance = request.json["balance"]
-
-        accounts[id] = {}
-        accounts[id]['name'] = name
-        accounts[id]['balance'] = balance
-        return {'status':'success'}
-
-    # delete an account
-    def delete(self):
-        id = request.json["id"]
-        name = request.json["name"]
-        del accounts[id]
-        return {'status':'success'}
-
 class Account_Balance(Resource):
 
     # to view balance of a specific account
@@ -50,12 +31,20 @@ class Account_Balance(Resource):
         result = {account_id: accounts[account_id]}
         return jsonify(result)
 
-    # to deposit funds into an account
+    # to add or edit an account
     def put(self, account_id):
-        deposit = request.json["deposit"]
-        accounts[account_id]['balance'] += deposit
+        name = request.json["name"]
+        balance = request.json["balance"]
+        accounts[account_id] = {}
+        accounts[account_id]['name'] = name
+        accounts[account_id]['balance'] = balance
         return {'status':'success',
                 'new balance':accounts[account_id]['balance']}
+
+    # delete an account
+    def delete(self, account_id):
+        del accounts[account_id]
+        return {'status':'success'}
 
 class Account_Transfer(Resource):
 
