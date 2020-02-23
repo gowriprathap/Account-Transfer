@@ -59,7 +59,7 @@ class Account_Balance(Resource):
 
 class Account_Transfer(Resource):
 
-    # to transfer funds from one account to another
+    # to transfer funds from one account to another account
     def post(self):
 
         id1 = request.json["from"]
