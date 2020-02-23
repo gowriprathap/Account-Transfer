@@ -2,6 +2,7 @@
 from flask import Flask, request, jsonify
 from flask_restful import Resource, Api
 from json import dumps
+from threading import Lock
 
 app = Flask(__name__)
 api = Api(app)
@@ -12,7 +13,7 @@ accounts = {'1':{'name':'Gowri','balance':5000},
             '4':{'name':'Taku','balance':540},
             '5':{'name':'Manju','balance':3400}
             }
-
+lock = Lock()
 
 class Accounts(Resource):
     def get(self):
@@ -53,10 +54,11 @@ class Account_Transfer(Resource):
         if (name1 != accounts[id1]["name"] or name2 != accounts[id2]["name"]):
             return {'status': 'ID and name do not match'}
         transfer = request.json["transfer"]
-        if (transfer > accounts[id1]['balance']):
-            return {'status': 'Insufficient funds to conduct money transfer'}
-        accounts[id1]['balance'] -= transfer
-        accounts[id2]['balance'] += transfer
+        with lock:
+            if (transfer > accounts[id1]['balance']):
+                return {'status': 'Insufficient funds to conduct money transfer'}
+            accounts[id1]['balance'] -= transfer
+            accounts[id2]['balance'] += transfer
         return {'status':'success'}
 
 
