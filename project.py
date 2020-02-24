@@ -28,6 +28,8 @@ class Account_Balance(Resource):
 
     # to view balance of a specific account
     def get(self, account_id):
+        if (account_id not in list(accounts.keys())):
+            return {'status':'Account not found'}
         result = {account_id: accounts[account_id]}
         return jsonify(result)
 
@@ -35,6 +37,8 @@ class Account_Balance(Resource):
     def put(self, account_id):
         name = request.json["name"]
         balance = request.json["balance"]
+        if (type(balance) != int) or (balance < 0):
+            return {'status':'Not a valid balance amount'}
         accounts[account_id] = {}
         accounts[account_id]['name'] = name
         accounts[account_id]['balance'] = balance
@@ -62,6 +66,8 @@ class Account_Transfer(Resource):
         with lock:
             if (amount > accounts[id1]['balance']):
                 return {'status': 'Insufficient funds to conduct transfer'}
+            if (type(amount) != int) or (amount < 0):
+                return {'status':'Not a valid transfer amount'}
             accounts[id1]['balance'] -= amount
             accounts[id2]['balance'] += amount
 
